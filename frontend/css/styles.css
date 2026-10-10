@@ -371,6 +371,7 @@ dialog::backdrop { background: rgba(20, 24, 28, 0.48); }
   box-shadow: var(--shadow);
 }
 .toast-error { background: var(--off); }
+.mapa { height: 520px; border-radius: 0.9rem; }
 
 @media (max-width: 980px) {
   .auth, .shell, .split, .stats { grid-template-columns: 1fr; }

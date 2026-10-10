@@ -51,7 +51,19 @@ create index if not exists autos_usuario_idx on autos (usuario_id);
 create index if not exists piezas_nombre_idx on piezas (nombre);
 create index if not exists auto_piezas_pieza_idx on auto_piezas (pieza_id);
 
+create table if not exists ubicaciones (
+  id uuid primary key default gen_random_uuid(),
+  usuario_id uuid not null references usuarios (id) on delete cascade,
+  latitud double precision not null check (latitud between -90 and 90),
+  longitud double precision not null check (longitud between -180 and 180),
+  precision_m double precision,
+  recorded_at timestamptz not null default now()
+);
+
+create index if not exists ubicaciones_usuario_idx on ubicaciones (usuario_id, recorded_at desc);
+
 alter table usuarios enable row level security;
 alter table autos enable row level security;
 alter table piezas enable row level security;
 alter table auto_piezas enable row level security;
+alter table ubicaciones enable row level security;

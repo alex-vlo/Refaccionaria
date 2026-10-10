@@ -58,6 +58,8 @@ Las rutas protegidas piden `Authorization: Bearer <token>`.
 | POST | `/api/autos/:id/piezas` | Vincula una pieza compatible |
 | DELETE | `/api/autos/:id/piezas/:piezaId` | Quita ese vínculo |
 | GET | `/api/resumen` | Admin y empleado |
+| POST | `/api/ubicaciones` | Sesión. Guarda la ubicación del dispositivo |
+| GET | `/api/ubicaciones` | Admin. Última ubicación de cada usuario |
 | GET | `/api/health` | Público |
 
 Filtros útiles: `/api/piezas?q=balata&categoria=Frenos&stock=bajo`, `/api/autos?q=nissan`, `/api/usuarios?q=ana`.

@@ -8,6 +8,7 @@ import usuariosRoutes from './routes/usuarios.js'
 import piezasRoutes from './routes/piezas.js'
 import autosRoutes from './routes/autos.js'
 import resumenRoutes from './routes/resumen.js'
+import ubicacionesRoutes from './routes/ubicaciones.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -33,6 +34,7 @@ app.use('/api/usuarios', usuariosRoutes)
 app.use('/api/piezas', piezasRoutes)
 app.use('/api/autos', autosRoutes)
 app.use('/api/resumen', resumenRoutes)
+app.use('/api/ubicaciones', ubicacionesRoutes)
 
 app.use('/api', (_req, res) => {
   res.status(404).json({ ok: false, error: 'Ruta no encontrada' })

@@ -1,0 +1,32 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+subprojects { subproject ->
+    if (subproject.name == "app") return
+    subproject.beforeEvaluate {
+        if (!subproject.ext.has("flutter")) {
+            subproject.ext.flutter = [
+                compileSdkVersion: 35,
+                minSdkVersion    : 21,
+                targetSdkVersion : 35,
+                ndkVersion       : "26.1.10909125"
+            ]
+        }
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

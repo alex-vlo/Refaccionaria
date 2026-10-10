@@ -10,7 +10,8 @@ const TITLES = {
   inicio: ['Panel', 'Inicio'],
   piezas: ['Inventario', 'Piezas'],
   autos: ['Taller', 'Autos'],
-  usuarios: ['Accesos', 'Usuarios']
+  usuarios: ['Accesos', 'Usuarios'],
+  mapa: ['Campo', 'Mapa']
 }
 const STOCK = {
   agotada: ['Agotada', 'badge-off'],
@@ -106,6 +107,7 @@ function stockBadge(estado, stock) {
 
 function applyRole() {
   $('nav-usuarios').hidden = !isStaff()
+  $('nav-mapa').hidden = !isAdmin()
   $('new-pieza').hidden = !isStaff()
   $('new-usuario').hidden = !isAdmin()
   $('piezas-actions-head').hidden = !isStaff()
@@ -131,12 +133,13 @@ function enterApp() {
   $('app-shell').hidden = false
   applyRole()
   paintWho()
-  if (state.view === 'usuarios' && !isStaff()) state.view = 'inicio'
+  if ((state.view === 'usuarios' && !isStaff()) || (state.view === 'mapa' && !isAdmin())) state.view = 'inicio'
   showView(state.view || 'inicio')
 }
 
 function showView(name) {
   if (name === 'usuarios' && !isStaff()) name = 'inicio'
+  if (name === 'mapa' && !isAdmin()) name = 'inicio'
   state.view = name
   const [kicker, title] = TITLES[name]
   $('view-kicker').textContent = kicker
@@ -153,7 +156,8 @@ function showView(name) {
     inicio: loadInicio,
     piezas: loadPiezas,
     autos: loadAutos,
-    usuarios: loadUsuarios
+    usuarios: loadUsuarios,
+    mapa: loadMapa
   }
   loaders[name]()
 }
@@ -171,6 +175,46 @@ function setAuthMode(mode) {
   $('auth-switch').textContent = register ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'
   $('auth-form').querySelector('[name="nombre"]').required = register
   $('auth-form').querySelector('[name="password"]').autocomplete = register ? 'new-password' : 'current-password'
+}
+
+let mapa
+const marcadores = []
+
+async function loadMapa() {
+  if (!window.L) {
+    $('mapa-meta').textContent = 'No se pudo cargar el mapa.'
+    return
+  }
+  if (!mapa) {
+    mapa = window.L.map('mapa').setView([23.63, -102.55], 5)
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(mapa)
+  }
+  setTimeout(() => mapa.invalidateSize(), 0)
+
+  try {
+    const { data } = await api.get('/ubicaciones')
+    marcadores.forEach((marker) => marker.remove())
+    marcadores.length = 0
+    const puntos = []
+    for (const item of data) {
+      const punto = [Number(item.latitud), Number(item.longitud)]
+      puntos.push(punto)
+      const quien = item.usuario?.nombre || 'Usuario'
+      const cuando = item.recorded_at ? new Date(item.recorded_at).toLocaleString('es-MX') : ''
+      marcadores.push(window.L.marker(punto).addTo(mapa).bindPopup(`<strong>${esc(quien)}</strong><br>${esc(cuando)}`))
+    }
+    if (puntos.length === 1) mapa.setView(puntos[0], 15)
+    else if (puntos.length > 1) mapa.fitBounds(puntos, { padding: [32, 32] })
+    $('mapa-meta').textContent = puntos.length
+      ? `${puntos.length} ubicación${puntos.length === 1 ? '' : 'es'}`
+      : 'Todavía nadie comparte su ubicación desde el celular.'
+  } catch (error) {
+    $('mapa-meta').textContent = error.message
+    toast(error.message, 'error')
+  }
 }
 
 async function loadInicio() {

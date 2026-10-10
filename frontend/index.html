@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   </head>
   <body>
     <div id="boot" class="boot">
@@ -66,6 +67,7 @@
           <button class="nav-btn" type="button" data-view="piezas">Piezas</button>
           <button class="nav-btn" type="button" data-view="autos">Autos</button>
           <button class="nav-btn" id="nav-usuarios" type="button" data-view="usuarios" hidden>Usuarios</button>
+          <button class="nav-btn" id="nav-mapa" type="button" data-view="mapa" hidden>Mapa</button>
         </nav>
         <div class="who">
           <span class="avatar" id="who-avatar">R</span>
@@ -171,6 +173,16 @@
           <p id="autos-meta" class="meta"></p>
         </section>
 
+        <section id="view-mapa" class="view" hidden>
+          <article class="panel">
+            <header class="panel-head">
+              <h2>Última ubicación compartida</h2>
+            </header>
+            <div id="mapa" class="mapa"></div>
+            <p id="mapa-meta" class="meta"></p>
+          </article>
+        </section>
+
         <section id="view-usuarios" class="view" hidden>
           <div class="toolbar">
             <input id="search-usuarios" type="search" placeholder="Buscar nombre o correo" />
@@ -212,6 +224,7 @@
 
     <div id="toasts" class="toasts" aria-live="polite"></div>
     <noscript>Activa JavaScript para usar el sistema.</noscript>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script type="module" src="/js/app.js"></script>
   </body>
 </html>
